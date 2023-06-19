@@ -54,6 +54,7 @@ export default function Home() {
             <CustomFilter
               title="year"
               options={yearsOfProduction}
+              // @ts-ignorets-ignore
               setFilter={setYear}
             />
           </div>
@@ -87,6 +88,7 @@ export default function Home() {
             <h2 className="text-black text-xl font-bold">
               Oops! No cars were found
             </h2>
+            {/*@ts-ignorets-ignore*/}
             <p>{allCars?.message}</p>
           </div>
         )}
