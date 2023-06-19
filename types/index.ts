@@ -16,7 +16,6 @@ export interface OptionTypes {
 export interface CustomFilterTypes {
   title: string;
   options: OptionTypes[];
-  setFilter: (filter: string) => void;
 }
 export interface SearchManufacturerTypes {
   selected: string;
@@ -59,7 +58,6 @@ export interface FilterTypes {
 export interface ShowMoreTypes {
   pageNumber: number;
   isNext: boolean;
-  setLimit: (limit: number) => void;
 }
 export interface HomeTypes {
   searchParams: FilterTypes;

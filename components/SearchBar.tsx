@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SearchManufacturer } from ".";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SearchTypes } from "@/types";
 const SearchButton = ({ otherClasses }: { otherClasses: string }) => {
   return (
@@ -17,34 +17,52 @@ const SearchButton = ({ otherClasses }: { otherClasses: string }) => {
     </button>
   );
 };
-const SearchBar = ({ setManufacturer, setModel }: SearchTypes) => {
+const SearchBar = () => {
   const [searchManufacturer, setSearchManufacturer] = useState("");
   const [searchModel, setSearchModel] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchModel.trim() === "" && searchManufacturer.trim() === "")
       return alert("Please fill in the search bar");
-    setModel(searchModel);
-    setManufacturer(searchManufacturer);
+    updateSearchParams(
+      searchManufacturer.toLowerCase(),
+      searchModel.toLowerCase()
+    );
   };
-  // const updateSearchParams = (manufacturer: string, model: string) => {
-  //   const searchParams = new URLSearchParams(window.location.search);
-  //   if (manufacturer) {
-  //     searchParams.set("manufacturer", manufacturer);
-  //   } else {
-  //     searchParams.delete("manufacturer");
-  //   }
-  //   if (model) {
-  //     searchParams.set("model", model);
-  //   } else {
-  //     searchParams.delete("model");
-  //   }
-  //   const newPathName = `${
-  //     window.location.pathname
-  //   }?${searchParams.toString()}`;
-  //   router.push(newPathName);
-  // };
+  const updateSearchParams = (manufacturer: string, model: string) => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (manufacturer) {
+      searchParams.set("manufacturer", manufacturer);
+    } else {
+      searchParams.delete("manufacturer");
+    }
+    if (model) {
+      searchParams.set("model", model);
+    } else {
+      searchParams.delete("model");
+    }
+    const newPathName = `${
+      window.location.pathname
+    }?${searchParams.toString()}`;
+    localStorage.setItem("persistentScroll", window.scrollY.toString());
+    router.push(newPathName);
+  };
+  useEffect(() => {
+    // Retrieve scrollY value from localStorage after routing
+    const persistentScroll = localStorage.getItem("persistentScroll");
+    if (persistentScroll === null) return;
+
+    // Restore the window's scroll position
+    window.scrollTo({ top: Number(persistentScroll) });
+
+    // Remove scrollY from localStorage after restoring the scroll position
+    // This hook will run before and after routing happens so this check is
+    // here to make we don't delete scrollY before routing
+    if (Number(persistentScroll) === window.scrollY)
+      localStorage.removeItem("persistentScroll");
+  }, [searchParams]);
   return (
     <form className="searchbar" onSubmit={handleSearch}>
       <div className="searchbar__item">
